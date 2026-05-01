@@ -117,21 +117,39 @@ export function useUpload() {
       );
 
       for await (const { index, data } of stream) {
-        // Upload this encrypted chunk
-        const upRes = await fetch(`/api/upload/chunk/${sessionId}/${index}`, {
-          method: "POST",
+        // 1. Get a signed upload URL from our API (validates session, no file data flows through Vercel)
+        const urlRes = await fetch(
+          `/api/upload/signed-url/${sessionId}/${index}`,
+          { method: "POST" },
+        );
+        if (!urlRes.ok) {
+          const err = await urlRes.json().catch(() => ({}));
+          throw new Error(err.error ?? `Failed to get upload URL for chunk ${index}.`);
+        }
+        const { signedUrl } = await urlRes.json();
+
+        // 2. Upload encrypted chunk DIRECTLY to Supabase Storage (bypasses Vercel 4.5 MB limit)
+        const uploadRes = await fetch(signedUrl, {
+          method: "PUT",
           headers: { "Content-Type": "application/octet-stream" },
           body: data,
         });
 
-        if (!upRes.ok) {
-          // Retry once
-          const retry = await fetch(`/api/upload/chunk/${sessionId}/${index}`, {
-            method: "POST",
-            headers: { "Content-Type": "application/octet-stream" },
-            body: data,
-          });
-          if (!retry.ok) {
+        if (!uploadRes.ok) {
+          // Retry once with a fresh signed URL
+          const retryUrlRes = await fetch(
+            `/api/upload/signed-url/${sessionId}/${index}`,
+            { method: "POST" },
+          );
+          if (retryUrlRes.ok) {
+            const { signedUrl: retryUrl } = await retryUrlRes.json();
+            const retryUpload = await fetch(retryUrl, {
+              method: "PUT",
+              headers: { "Content-Type": "application/octet-stream" },
+              body: data,
+            });
+            if (!retryUpload.ok) throw new Error(`Failed to upload chunk ${index}.`);
+          } else {
             throw new Error(`Failed to upload chunk ${index}.`);
           }
         }

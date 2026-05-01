@@ -11,7 +11,11 @@ const navItems = [
   { href: "/admin/sessions", label: "Sessions", icon: Activity, exact: false },
 ];
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -32,14 +36,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
           <div>
             <p className="text-sm font-bold text-white leading-none">Nexro</p>
-            <p className="text-[10px] text-muted mt-0.5 uppercase tracking-wider">Admin</p>
+            <p className="text-[10px] text-muted mt-0.5 uppercase tracking-wider">
+              Admin
+            </p>
           </div>
         </div>
 
         {/* Nav */}
         <nav className="flex-1 flex flex-col gap-1 px-3 py-4">
           {navItems.map(({ href, label, icon: Icon, exact }) => {
-            const isActive = exact ? pathname === href : pathname.startsWith(href);
+            const isActive = exact
+              ? pathname === href
+              : pathname.startsWith(href);
             return (
               <Link
                 key={href}
@@ -78,14 +86,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
         <div className="flex items-center gap-1">
           {navItems.map(({ href, label, icon: Icon, exact }) => {
-            const isActive = exact ? pathname === href : pathname.startsWith(href);
+            const isActive = exact
+              ? pathname === href
+              : pathname.startsWith(href);
             return (
               <Link
                 key={href}
                 href={href}
                 className={cn(
                   "flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors",
-                  isActive ? "bg-accent/15 text-accent" : "text-text-secondary hover:text-white",
+                  isActive
+                    ? "bg-accent/15 text-accent"
+                    : "text-text-secondary hover:text-white",
                 )}
               >
                 <Icon className="h-3.5 w-3.5" />
@@ -104,9 +116,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       {/* Main content */}
       <main className="flex-1 overflow-hidden md:pt-0 pt-14">
-        <div className="h-full overflow-y-auto">
-          {children}
-        </div>
+        <div className="h-full overflow-y-auto">{children}</div>
       </main>
     </div>
   );

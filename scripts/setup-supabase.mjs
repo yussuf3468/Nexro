@@ -104,7 +104,9 @@ async function runMigration() {
     }
   }
 
-  console.log(`   ✓ Migration complete (${ok} statements, ${skipped} already existed).`);
+  console.log(
+    `   ✓ Migration complete (${ok} statements, ${skipped} already existed).`,
+  );
 }
 
 async function runRawSQL() {
@@ -132,7 +134,9 @@ async function runRawSQL() {
     console.log(
       "   ➜  Please run the migration SQL manually in the Supabase SQL editor:",
     );
-    console.log(`      ${supabaseUrl.replace("https://", "https://app.supabase.com/project/")}/editor`);
+    console.log(
+      `      ${supabaseUrl.replace("https://", "https://app.supabase.com/project/")}/editor`,
+    );
     return false;
   }
 
@@ -188,7 +192,9 @@ async function main() {
         "   2. Copy and paste the contents of: supabase/migrations/001_initial.sql",
       );
       console.log("   3. Click 'Run'");
-      console.log("   4. Re-run this script to verify: node scripts/setup-supabase.mjs");
+      console.log(
+        "   4. Re-run this script to verify: node scripts/setup-supabase.mjs",
+      );
     } else {
       console.log("\n✅  All tables exist.");
     }

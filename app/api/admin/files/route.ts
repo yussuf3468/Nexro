@@ -6,7 +6,10 @@ import { isValidUUID } from "@/lib/crypto-server";
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
   const page = Math.max(1, parseInt(searchParams.get("page") ?? "1", 10));
-  const limit = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") ?? "25", 10)));
+  const limit = Math.min(
+    100,
+    Math.max(1, parseInt(searchParams.get("limit") ?? "25", 10)),
+  );
   const search = searchParams.get("search")?.trim() ?? "";
   const filter = searchParams.get("filter") ?? "all"; // all | active | expired | deleted
 
@@ -25,7 +28,9 @@ export async function GET(request: NextRequest) {
 
   const now = new Date().toISOString();
   if (filter === "active") {
-    query = query.eq("is_deleted", false).or(`expires_at.is.null,expires_at.gt.${now}`);
+    query = query
+      .eq("is_deleted", false)
+      .or(`expires_at.is.null,expires_at.gt.${now}`);
   } else if (filter === "expired") {
     query = query.eq("is_deleted", false).lt("expires_at", now);
   } else if (filter === "deleted") {
@@ -35,10 +40,18 @@ export async function GET(request: NextRequest) {
   const { data, error, count } = await query;
 
   if (error) {
-    return NextResponse.json({ error: "Failed to fetch files." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch files." },
+      { status: 500 },
+    );
   }
 
-  return NextResponse.json({ files: data ?? [], total: count ?? 0, page, limit });
+  return NextResponse.json({
+    files: data ?? [],
+    total: count ?? 0,
+    page,
+    limit,
+  });
 }
 
 /** DELETE /api/admin/files?id=<uuid>  — soft-delete a file */
@@ -61,8 +74,9 @@ export async function DELETE(request: NextRequest) {
   }
 
   // Remove chunks from storage
-  const chunkPaths = Array.from({ length: file.chunk_count }, (_, i) =>
-    `${file.storage_path}/chunk_${i}`,
+  const chunkPaths = Array.from(
+    { length: file.chunk_count },
+    (_, i) => `${file.storage_path}/chunk_${i}`,
   );
 
   await supabaseAdmin.storage.from(STORAGE_BUCKET).remove(chunkPaths);
@@ -74,7 +88,10 @@ export async function DELETE(request: NextRequest) {
     .eq("id", id);
 
   if (updateErr) {
-    return NextResponse.json({ error: "Failed to delete file." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to delete file." },
+      { status: 500 },
+    );
   }
 
   return NextResponse.json({ ok: true });

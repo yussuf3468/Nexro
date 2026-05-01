@@ -7,16 +7,15 @@ export async function GET() {
     supabaseAdmin
       .from("files")
       .select("id, size, download_count, is_deleted, created_at, expires_at"),
-    supabaseAdmin
-      .from("upload_sessions")
-      .select("id, completed, created_at"),
-    supabaseAdmin
-      .from("access_attempts")
-      .select("id, attempted_at"),
+    supabaseAdmin.from("upload_sessions").select("id, completed, created_at"),
+    supabaseAdmin.from("access_attempts").select("id, attempted_at"),
   ]);
 
   if (filesResult.error || sessionsResult.error || attemptsResult.error) {
-    return NextResponse.json({ error: "Failed to fetch stats." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch stats." },
+      { status: 500 },
+    );
   }
 
   const files = filesResult.data ?? [];
@@ -32,7 +31,10 @@ export async function GET() {
   );
   const deletedFiles = files.filter((f) => f.is_deleted);
   const totalStorage = activeFiles.reduce((sum, f) => sum + (f.size ?? 0), 0);
-  const totalDownloads = files.reduce((sum, f) => sum + (f.download_count ?? 0), 0);
+  const totalDownloads = files.reduce(
+    (sum, f) => sum + (f.download_count ?? 0),
+    0,
+  );
 
   // Uploads in last 24h
   const oneDayAgo = new Date(Date.now() - 86_400_000);

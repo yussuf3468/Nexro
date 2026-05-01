@@ -6,7 +6,11 @@ const COOKIE_MAX_AGE = 60 * 60 * 8; // 8 hours
 
 /** base64url using Node — must match the Web Crypto version in middleware */
 function toBase64url(buf: Buffer): string {
-  return buf.toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  return buf
+    .toString("base64")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
 }
 
 function sign(data: string, secret: string): string {
@@ -29,7 +33,10 @@ function makeAdminCookie(secret: string): string {
 export async function POST(request: NextRequest) {
   const adminSecret = process.env.ADMIN_SECRET ?? "";
   if (!adminSecret) {
-    return NextResponse.json({ error: "Admin access disabled." }, { status: 503 });
+    return NextResponse.json(
+      { error: "Admin access disabled." },
+      { status: 503 },
+    );
   }
 
   let password: string;

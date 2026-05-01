@@ -43,7 +43,9 @@ function StatCard({
     <div className="flex flex-col gap-3 rounded-2xl border border-border bg-surface p-5">
       <div className="flex items-center justify-between">
         <p className="text-sm text-text-secondary">{label}</p>
-        <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${accent ?? "bg-surface-2"}`}>
+        <div
+          className={`flex h-8 w-8 items-center justify-center rounded-lg ${accent ?? "bg-surface-2"}`}
+        >
           <Icon className="h-4 w-4 text-white" />
         </div>
       </div>
@@ -74,7 +76,9 @@ export default function AdminDashboardPage() {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-white">Dashboard</h1>
-        <p className="text-sm text-text-secondary mt-1">Overview of all Nexro activity</p>
+        <p className="text-sm text-text-secondary mt-1">
+          Overview of all Nexro activity
+        </p>
       </div>
 
       {error && (
@@ -86,7 +90,10 @@ export default function AdminDashboardPage() {
       {!stats && !error && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="h-28 rounded-2xl border border-border bg-surface animate-pulse" />
+            <div
+              key={i}
+              className="h-28 rounded-2xl border border-border bg-surface animate-pulse"
+            />
           ))}
         </div>
       )}
@@ -166,7 +173,9 @@ export default function AdminDashboardPage() {
               </div>
               <div>
                 <p className="font-semibold text-white">Manage Files</p>
-                <p className="text-xs text-text-secondary mt-0.5">View, search and delete uploaded files</p>
+                <p className="text-xs text-text-secondary mt-0.5">
+                  View, search and delete uploaded files
+                </p>
               </div>
             </a>
             <a
@@ -178,7 +187,9 @@ export default function AdminDashboardPage() {
               </div>
               <div>
                 <p className="font-semibold text-white">Upload Sessions</p>
-                <p className="text-xs text-text-secondary mt-0.5">Monitor active and completed upload sessions</p>
+                <p className="text-xs text-text-secondary mt-0.5">
+                  Monitor active and completed upload sessions
+                </p>
               </div>
             </a>
           </div>

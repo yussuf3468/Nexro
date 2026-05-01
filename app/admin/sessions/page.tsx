@@ -36,7 +36,13 @@ function formatDate(iso: string) {
   });
 }
 
-function Progress({ received, expected }: { received: number; expected: number }) {
+function Progress({
+  received,
+  expected,
+}: {
+  received: number;
+  expected: number;
+}) {
   const pct = expected > 0 ? Math.round((received / expected) * 100) : 0;
   return (
     <div className="flex items-center gap-2">
@@ -96,7 +102,8 @@ export default function AdminSessionsPage() {
         <div>
           <h1 className="text-2xl font-bold text-white">Upload Sessions</h1>
           <p className="text-sm text-text-secondary mt-0.5">
-            {pending} pending · {completed} completed · auto-refreshes every 10 s
+            {pending} pending · {completed} completed · auto-refreshes every 10
+            s
           </p>
         </div>
         <div className="ml-auto flex items-center gap-2">
@@ -110,7 +117,9 @@ export default function AdminSessionsPage() {
             disabled={loading}
             className="flex items-center gap-2 rounded-xl border border-border px-4 py-2 text-sm text-text-secondary hover:text-white transition-colors disabled:opacity-50"
           >
-            <RefreshCw className={cn("h-3.5 w-3.5", loading && "animate-spin")} />
+            <RefreshCw
+              className={cn("h-3.5 w-3.5", loading && "animate-spin")}
+            />
             Refresh
           </button>
         </div>
@@ -159,7 +168,10 @@ export default function AdminSessionsPage() {
                 ))
               ) : sessions.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-12 text-center text-text-secondary">
+                  <td
+                    colSpan={6}
+                    className="px-4 py-12 text-center text-text-secondary"
+                  >
                     <Activity className="mx-auto mb-2 h-8 w-8 text-muted" />
                     No sessions found
                   </td>
@@ -189,7 +201,10 @@ export default function AdminSessionsPage() {
                       </a>
                     </td>
                     <td className="px-4 py-3">
-                      <Progress received={s.received_chunks} expected={s.expected_chunks} />
+                      <Progress
+                        received={s.received_chunks}
+                        expected={s.expected_chunks}
+                      />
                     </td>
                     <td className="px-4 py-3 text-text-secondary hidden md:table-cell whitespace-nowrap text-xs">
                       {formatDate(s.created_at)}

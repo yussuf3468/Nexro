@@ -12,7 +12,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import { supabaseAdmin } from "@/lib/supabase-server";
+import { supabaseAdmin, STORAGE_BUCKET } from "@/lib/supabase-server";
 import { getClientIP, isValidUUID, sanitizeInput } from "@/lib/crypto-server";
 import { sha256Hex } from "@/lib/crypto-server";
 import { sanitizeFileName, expiryToDate } from "@/lib/utils";
@@ -101,11 +101,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verify all expected chunks arrived
-    const received = new Set(session.received_chunks as number[]);
+    // Verify all expected chunks are present in Supabase Storage
+    const { data: storedObjects, error: listError } = await supabaseAdmin.storage
+      .from(STORAGE_BUCKET)
+      .list(`uploads/${fileId}`);
+
+    if (listError) {
+      return NextResponse.json(
+        { error: "Failed to verify uploaded chunks." },
+        { status: 500 },
+      );
+    }
+
+    const storedNames = new Set((storedObjects ?? []).map((o) => o.name));
     const missing: number[] = [];
-    for (let i = 0; i < session.expected_chunks; i++) {
-      if (!received.has(i)) missing.push(i);
+    for (let i = 0; i < chunkCount; i++) {
+      if (!storedNames.has(`chunk_${i}`)) missing.push(i);
     }
     if (missing.length > 0) {
       return NextResponse.json(

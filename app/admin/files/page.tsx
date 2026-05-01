@@ -102,10 +102,13 @@ export default function AdminFilesPage() {
   }, [filter, search]);
 
   async function deleteFile(id: string) {
-    if (!confirm("Delete this file? This removes it from storage permanently.")) return;
+    if (!confirm("Delete this file? This removes it from storage permanently."))
+      return;
     setDeletingId(id);
     try {
-      const res = await fetch(`/api/admin/files?id=${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/admin/files?id=${id}`, {
+        method: "DELETE",
+      });
       const data = await res.json();
       if (data.ok) fetchFiles();
       else setError(data.error ?? "Delete failed.");
@@ -222,7 +225,10 @@ export default function AdminFilesPage() {
                 ))
               ) : files.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-12 text-center text-text-secondary">
+                  <td
+                    colSpan={6}
+                    className="px-4 py-12 text-center text-text-secondary"
+                  >
                     <FileText className="mx-auto mb-2 h-8 w-8 text-muted" />
                     No files found
                   </td>
@@ -237,7 +243,10 @@ export default function AdminFilesPage() {
                     )}
                   >
                     <td className="px-4 py-3 max-w-[200px]">
-                      <p className="font-medium text-white truncate" title={file.original_name}>
+                      <p
+                        className="font-medium text-white truncate"
+                        title={file.original_name}
+                      >
                         {file.original_name}
                       </p>
                       <p className="text-[11px] text-muted mt-0.5 font-mono truncate">
@@ -250,11 +259,16 @@ export default function AdminFilesPage() {
                     <td className="px-4 py-3 text-text-secondary hidden md:table-cell whitespace-nowrap">
                       {file.download_count}
                       {file.max_downloads ? (
-                        <span className="text-muted"> / {file.max_downloads}</span>
+                        <span className="text-muted">
+                          {" "}
+                          / {file.max_downloads}
+                        </span>
                       ) : null}
                     </td>
                     <td className="px-4 py-3 text-text-secondary hidden lg:table-cell whitespace-nowrap">
-                      {file.expires_at ? formatTimeLeft(file.expires_at) : "Never"}
+                      {file.expires_at
+                        ? formatTimeLeft(file.expires_at)
+                        : "Never"}
                     </td>
                     <td className="px-4 py-3">
                       <StatusBadge file={file} />

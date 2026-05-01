@@ -3,7 +3,10 @@ import { NextRequest, NextResponse } from "next/server";
 const COOKIE_NAME = "nexro_admin";
 
 /** Web Crypto HMAC-SHA256 using SubtleCrypto (Edge-compatible) */
-async function hmacSha256Base64url(secret: string, data: string): Promise<string> {
+async function hmacSha256Base64url(
+  secret: string,
+  data: string,
+): Promise<string> {
   const enc = new TextEncoder();
   const key = await crypto.subtle.importKey(
     "raw",
@@ -36,7 +39,10 @@ async function safeEqual(a: string, b: string): Promise<boolean> {
 }
 
 /** Verify admin cookie — format: payload.sig */
-async function verifyAdminCookie(cookie: string, secret: string): Promise<boolean> {
+async function verifyAdminCookie(
+  cookie: string,
+  secret: string,
+): Promise<boolean> {
   if (!cookie) return false;
   const dot = cookie.lastIndexOf(".");
   if (dot === -1) return false;
@@ -62,10 +68,13 @@ export async function middleware(request: NextRequest) {
   const adminSecret = process.env.ADMIN_SECRET ?? "";
 
   if (!adminSecret) {
-    return new NextResponse("Admin access disabled. Set ADMIN_SECRET env var.", {
-      status: 503,
-      headers: { "Content-Type": "text/plain" },
-    });
+    return new NextResponse(
+      "Admin access disabled. Set ADMIN_SECRET env var.",
+      {
+        status: 503,
+        headers: { "Content-Type": "text/plain" },
+      },
+    );
   }
 
   const cookie = request.cookies.get(COOKIE_NAME)?.value ?? "";

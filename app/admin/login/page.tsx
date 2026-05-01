@@ -60,7 +60,10 @@ function AdminLoginForm() {
           className="flex flex-col gap-4 rounded-2xl border border-border bg-surface p-6"
         >
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="password" className="text-sm font-medium text-text-secondary">
+            <label
+              htmlFor="password"
+              className="text-sm font-medium text-text-secondary"
+            >
               Password
             </label>
             <div className="relative">
@@ -80,7 +83,11 @@ function AdminLoginForm() {
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-white transition-colors"
                 aria-label={show ? "Hide password" : "Show password"}
               >
-                {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                {show ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
               </button>
             </div>
           </div>
@@ -96,11 +103,7 @@ function AdminLoginForm() {
             disabled={loading || !password}
             className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-accent px-4 text-sm font-semibold text-white shadow-glow-sm hover:bg-accent/90 hover:shadow-glow disabled:opacity-50 disabled:pointer-events-none transition-all"
           >
-            {loading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              "Sign In"
-            )}
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Sign In"}
           </button>
         </form>
 

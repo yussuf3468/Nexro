@@ -72,7 +72,12 @@ export async function deriveKey(
     ["deriveKey"],
   );
   return crypto.subtle.deriveKey(
-    { name: "PBKDF2", salt: salt as BufferSource, iterations: PBKDF2_ITERATIONS, hash: "SHA-256" },
+    {
+      name: "PBKDF2",
+      salt: salt as BufferSource,
+      iterations: PBKDF2_ITERATIONS,
+      hash: "SHA-256",
+    },
     raw,
     { name: "AES-GCM", length: KEY_BITS },
     false,
@@ -85,7 +90,11 @@ async function encryptChunk(
   data: ArrayBuffer,
   iv: Uint8Array,
 ): Promise<ArrayBuffer> {
-  return crypto.subtle.encrypt({ name: "AES-GCM", iv: iv as BufferSource }, key, data);
+  return crypto.subtle.encrypt(
+    { name: "AES-GCM", iv: iv as BufferSource },
+    key,
+    data,
+  );
 }
 
 async function decryptChunk(
@@ -93,7 +102,11 @@ async function decryptChunk(
   data: ArrayBuffer,
   iv: Uint8Array,
 ): Promise<ArrayBuffer> {
-  return crypto.subtle.decrypt({ name: "AES-GCM", iv: iv as BufferSource }, key, data);
+  return crypto.subtle.decrypt(
+    { name: "AES-GCM", iv: iv as BufferSource },
+    key,
+    data,
+  );
 }
 
 // ─── Streaming encrypt (generator) ──────────────────────────────────────────
