@@ -22,6 +22,7 @@ export function useFileAccess(fileId: string) {
   const [loading, setLoading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [savedViaFSA, setSavedViaFSA] = useState(false);
+  const [openedInBrowser, setOpenedInBrowser] = useState(false);
 
   // Separate refs: session data from API + raw access code from user
   const sessionRef = useRef<AccessResponse | null>(null);
@@ -106,11 +107,16 @@ export function useFileAccess(fileId: string) {
       const accessCode = codeRef.current;
 
       const PREVIEW_THRESHOLD = 200 * 1024 * 1024; // 200 MB
-      const canPreview =
-        fileSize < PREVIEW_THRESHOLD &&
-        (mimeType.startsWith("image/") ||
-          mimeType.startsWith("video/") ||
-          mimeType.startsWith("audio/"));
+      const hasFSA =
+        typeof window !== "undefined" && "showSaveFilePicker" in window;
+      const isMedia =
+        mimeType.startsWith("image/") ||
+        mimeType.startsWith("video/") ||
+        mimeType.startsWith("audio/");
+      // On desktop with FSA, limit preview to files < 200 MB (large files use the
+      // save-picker stream instead).  On mobile without FSA, always preview media
+      // because inline playback is the only practical way to access the file.
+      const canPreview = isMedia && (hasFSA ? fileSize < PREVIEW_THRESHOLD : true);
 
       // Fetch a single encrypted chunk from the API (signed redirect)
       const fetchChunk = async (index: number): Promise<ArrayBuffer> => {
@@ -125,12 +131,8 @@ export function useFileAccess(fileId: string) {
       setDecryptProgress(0);
 
       try {
-        // ── Try File System Access API for large files ────────────────────────
-        if (
-          typeof window !== "undefined" &&
-          "showSaveFilePicker" in window &&
-          fileSize > PREVIEW_THRESHOLD
-        ) {
+        // ── File System Access API (desktop, files too large to preview) ────────
+        if (hasFSA && fileSize > PREVIEW_THRESHOLD) {
           await _streamToFilePicker(
             accessCode,
             session,
@@ -179,7 +181,16 @@ export function useFileAccess(fileId: string) {
         setStage("done");
       } catch (err) {
         const msg = err instanceof Error ? err.message : "Decryption failed.";
-        setError(msg);
+        // On mobile without FSA, large files commonly fail due to RAM limits.
+        const likelyOOM =
+          !hasFSA && fileSize > 300 * 1024 * 1024;
+        setError(
+          likelyOOM
+            ? `This file is ${Math.round(fileSize / 1024 / 1024)} MB — too large to ` +
+              "decrypt in a mobile browser. Please open this link on a desktop " +
+              "browser (Chrome or Edge)."
+            : msg,
+        );
         setStage("error");
       }
     },
@@ -240,7 +251,7 @@ export function useFileAccess(fileId: string) {
         // Don't silently reset to idle — that causes the access form to reappear
         // without explanation, making users think they need to re-enter the code.
         setError(
-          "Save dialog was cancelled. Click \"Try Again\" to pick a save location.",
+          'Save dialog was cancelled. Click "Try Again" to pick a save location.',
         );
         setStage("error");
         return;
@@ -260,9 +271,25 @@ export function useFileAccess(fileId: string) {
   // ── Trigger file download (called from UI button) ─────────────────────────
   const download = useCallback(() => {
     if (!downloadBlobRef.current || !sessionRef.current) return;
+    const url = downloadBlobRef.current;
+    const fileName = sessionRef.current.fileName;
+
+    // iOS Safari ignores the `download` attribute on blob: URLs — clicking the
+    // link navigates away and the current page is lost.  Instead, open the blob
+    // URL in a new tab so the user can tap the Share sheet → "Save to Files".
+    const isIOS =
+      typeof navigator !== "undefined" &&
+      /iPad|iPhone|iPod/.test(navigator.userAgent);
+    if (isIOS) {
+      window.open(url, "_blank", "noopener");
+      setOpenedInBrowser(true);
+      return;
+    }
+
     const a = document.createElement("a");
-    a.href = downloadBlobRef.current;
-    a.download = sessionRef.current.fileName;
+    a.href = url;
+    a.download = fileName;
+    a.style.display = "none";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -277,6 +304,7 @@ export function useFileAccess(fileId: string) {
     decryptProgress,
     previewUrl,
     savedViaFSA,
+    openedInBrowser,
     loading,
     fetchFileInfo,
     accessFile,

@@ -29,6 +29,7 @@ export default function FilePage({ params }: FilePageProps) {
     decryptProgress,
     previewUrl,
     savedViaFSA,
+    openedInBrowser,
     loading,
     fetchFileInfo,
     accessFile,
@@ -167,6 +168,7 @@ export default function FilePage({ params }: FilePageProps) {
                   error={error}
                   previewUrl={previewUrl}
                   savedViaFSA={savedViaFSA}
+                  openedInBrowser={openedInBrowser}
                   onDownload={download}
                   onRetry={retryDownload}
                 />

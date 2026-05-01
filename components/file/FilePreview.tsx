@@ -30,6 +30,7 @@ interface FilePreviewProps {
   error: string | null;
   previewUrl: string | null;
   savedViaFSA?: boolean;
+  openedInBrowser?: boolean;
   onDownload: () => void;
   onRetry?: () => void;
 }
@@ -67,6 +68,7 @@ export function FilePreview({
   error,
   previewUrl,
   savedViaFSA,
+  openedInBrowser,
   onDownload,
   onRetry,
 }: FilePreviewProps) {
@@ -221,7 +223,7 @@ export function FilePreview({
         )}
       </AnimatePresence>
 
-      {/* Download button or saved-via-FSA confirmation */}
+      {/* Download button or saved/opened confirmation */}
       <AnimatePresence>
         {isDone && savedViaFSA && (
           <motion.div
@@ -237,7 +239,27 @@ export function FilePreview({
             </div>
           </motion.div>
         )}
-        {isDone && !savedViaFSA && (
+        {isDone && openedInBrowser && (
+          <motion.div
+            key="opened"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <div className="flex flex-col gap-1 rounded-xl border border-success/30 bg-success/6 px-4 py-3.5">
+              <div className="flex items-center gap-3">
+                <CheckCircle2 className="h-5 w-5 shrink-0 text-success" />
+                <p className="text-sm font-medium text-success">
+                  File opened in a new tab.
+                </p>
+              </div>
+              <p className="pl-8 text-xs text-text-secondary">
+                Tap the Share button in your browser, then choose
+                &ldquo;Save to Files&rdquo; to keep the file.
+              </p>
+            </div>
+          </motion.div>
+        )}
+        {isDone && !savedViaFSA && !openedInBrowser && (
           <motion.div
             key="download"
             initial={{ opacity: 0, y: 8 }}
