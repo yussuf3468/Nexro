@@ -138,6 +138,11 @@ export function isValidAccessCode(code: string): boolean {
 
 /** Build share URL */
 export function buildShareUrl(fileId: string, appUrl?: string): string {
-  const base = appUrl ?? process.env.NEXT_PUBLIC_APP_URL ?? "";
+  const configured = appUrl ?? process.env.NEXT_PUBLIC_APP_URL ?? "";
+  // In the browser, prefer the actual origin over a stale env value
+  const base =
+    typeof window !== "undefined" && window.location.origin
+      ? window.location.origin
+      : configured;
   return `${base}/file/${fileId}`;
 }
