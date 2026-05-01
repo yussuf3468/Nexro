@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, FormEvent, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Shield, Eye, EyeOff, Loader2 } from "lucide-react";
 
 function AdminLoginForm() {
@@ -9,7 +9,6 @@ function AdminLoginForm() {
   const [show, setShow] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams.get("next") ?? "/admin";
 
@@ -24,10 +23,11 @@ function AdminLoginForm() {
         body: JSON.stringify({ password }),
       });
       if (res.ok) {
-        router.push(next);
-        router.refresh();
+        // Hard redirect so the browser sends a fresh request with the new cookie.
+        // Client-side router.push can race with cookie propagation in middleware.
+        window.location.href = next;
       } else {
-        const data = await res.json();
+        const data = await res.json().catch(() => ({}));
         setError(data.error ?? "Invalid password.");
       }
     } catch {
