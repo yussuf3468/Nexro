@@ -21,6 +21,7 @@ export function useFileAccess(fileId: string) {
   const [decryptProgress, setDecryptProgress] = useState(0);
   const [loading, setLoading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [savedViaFSA, setSavedViaFSA] = useState(false);
 
   // Separate refs: session data from API + raw access code from user
   const sessionRef = useRef<AccessResponse | null>(null);
@@ -168,16 +169,8 @@ export function useFileAccess(fileId: string) {
           plainChunks.push(chunk);
         }
 
-        // Assemble
-        const total = plainChunks.reduce((n, c) => n + c.byteLength, 0);
-        const assembled = new Uint8Array(total);
-        let offset = 0;
-        for (const c of plainChunks) {
-          assembled.set(c, offset);
-          offset += c.byteLength;
-        }
-
-        const blob = new Blob([assembled], { type: mimeType });
+        // Build blob directly from chunks — avoids assembling a second full-size Uint8Array
+        const blob = new Blob(plainChunks as BlobPart[], { type: mimeType });
         const blobUrl = URL.createObjectURL(blob);
         downloadBlobRef.current = blobUrl;
 
@@ -240,15 +233,29 @@ export function useFileAccess(fileId: string) {
       }
 
       await writable.close();
+      setSavedViaFSA(true);
       setStage("done");
     } catch (err) {
       if (err instanceof Error && err.name === "AbortError") {
-        setStage("idle");
+        // Don't silently reset to idle — that causes the access form to reappear
+        // without explanation, making users think they need to re-enter the code.
+        setError(
+          "Save dialog was cancelled. Click \"Try Again\" to pick a save location.",
+        );
+        setStage("error");
         return;
       }
       throw err;
     }
   };
+
+  // ── Retry download (e.g. after FSA was cancelled) — call from a user gesture ─
+  const retryDownload = useCallback(async () => {
+    if (!sessionRef.current) return;
+    setError(null);
+    setSavedViaFSA(false);
+    await _downloadAndDecrypt(sessionRef.current);
+  }, [_downloadAndDecrypt]);
 
   // ── Trigger file download (called from UI button) ─────────────────────────
   const download = useCallback(() => {
@@ -269,9 +276,11 @@ export function useFileAccess(fileId: string) {
     downloadProgress,
     decryptProgress,
     previewUrl,
+    savedViaFSA,
     loading,
     fetchFileInfo,
     accessFile,
+    retryDownload,
     download,
   };
 }

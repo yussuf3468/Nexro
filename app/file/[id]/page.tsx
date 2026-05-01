@@ -28,9 +28,11 @@ export default function FilePage({ params }: FilePageProps) {
     downloadProgress,
     decryptProgress,
     previewUrl,
+    savedViaFSA,
     loading,
     fetchFileInfo,
     accessFile,
+    retryDownload,
     download,
   } = useFileAccess(id);
 
@@ -164,7 +166,9 @@ export default function FilePage({ params }: FilePageProps) {
                   decryptProgress={decryptProgress}
                   error={error}
                   previewUrl={previewUrl}
+                  savedViaFSA={savedViaFSA}
                   onDownload={download}
+                  onRetry={retryDownload}
                 />
               </motion.div>
             )}

@@ -29,7 +29,9 @@ interface FilePreviewProps {
   decryptProgress: number;
   error: string | null;
   previewUrl: string | null;
+  savedViaFSA?: boolean;
   onDownload: () => void;
+  onRetry?: () => void;
 }
 
 const categoryIconMap: Record<string, React.ElementType> = {
@@ -64,7 +66,9 @@ export function FilePreview({
   decryptProgress,
   error,
   previewUrl,
+  savedViaFSA,
   onDownload,
+  onRetry,
 }: FilePreviewProps) {
   const category = getFileCategory(fileInfo.mime_type);
   const CategoryIcon = categoryIconMap[category] ?? File;
@@ -158,7 +162,17 @@ export function FilePreview({
             className="flex items-start gap-3 rounded-xl border border-danger/30 bg-danger/6 p-4"
           >
             <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-danger" />
-            <p className="text-sm text-danger">{error}</p>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm text-danger">{error}</p>
+              {onRetry && (
+                <button
+                  onClick={onRetry}
+                  className="mt-2 text-xs font-medium text-danger underline hover:no-underline"
+                >
+                  Try Again
+                </button>
+              )}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -207,10 +221,25 @@ export function FilePreview({
         )}
       </AnimatePresence>
 
-      {/* Download button */}
+      {/* Download button or saved-via-FSA confirmation */}
       <AnimatePresence>
-        {isDone && (
+        {isDone && savedViaFSA && (
           <motion.div
+            key="saved"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <div className="flex items-center gap-3 rounded-xl border border-success/30 bg-success/6 px-4 py-3.5">
+              <CheckCircle2 className="h-5 w-5 shrink-0 text-success" />
+              <p className="text-sm font-medium text-success">
+                File saved to your device.
+              </p>
+            </div>
+          </motion.div>
+        )}
+        {isDone && !savedViaFSA && (
+          <motion.div
+            key="download"
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
           >
