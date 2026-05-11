@@ -131,7 +131,7 @@ export default function HomePage() {
   return (
     <div className="flex flex-col overflow-x-hidden">
       {/* ── Hero ──────────────────────────────────────────────────────────── */}
-      <section className="relative flex min-h-[calc(100dvh-64px)] items-center overflow-hidden py-16 sm:py-20 lg:py-8">
+      <section className="relative flex items-center overflow-hidden py-14 sm:py-20 lg:min-h-[calc(100dvh-64px)] lg:py-8">
         {/* Layered background */}
         <div className="pointer-events-none absolute inset-0 bg-grid opacity-60" />
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_90%_60%_at_50%_-10%,rgba(124,110,255,0.13),transparent)]" />
@@ -143,60 +143,57 @@ export default function HomePage() {
 
         <div className="relative w-full mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-14 lg:gap-10 xl:gap-16 items-center">
-
             {/* ── Left: text ────────────────────────────────────────────── */}
             <div className="text-center lg:text-left">
               {/* Animated pill badge */}
-              <div className="mb-6 inline-flex items-center gap-2.5 rounded-full border border-accent/30 bg-accent/8 px-4 py-1.5 text-xs sm:text-sm font-medium text-accent shadow-glow-sm">
+              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/8 px-3 sm:px-4 py-1.5 text-[10px] xs:text-xs sm:text-sm font-medium text-accent shadow-glow-sm">
                 <span className="relative flex h-2 w-2 shrink-0">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-75" />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
                 </span>
-                AES-256-GCM · Zero Knowledge · No Account
+                <span className="sm:hidden">Zero Knowledge · No Account</span>
+                <span className="hidden sm:inline">
+                  AES-256-GCM · Zero Knowledge · No Account
+                </span>
               </div>
 
               {/* Headline */}
-              <h1 className="mb-5 text-[2.6rem] sm:text-5xl lg:text-6xl xl:text-[4rem] font-extrabold tracking-tight leading-[1.05]">
+              <h1 className="mb-5 text-[1.9rem] xs:text-[2.4rem] sm:text-5xl lg:text-6xl xl:text-[4rem] font-extrabold tracking-tight leading-[1.1]">
                 <span className="text-white">Share files only </span>
-                <br className="hidden xs:block" />
                 <span className="bg-gradient-to-r from-accent via-violet-300 to-purple-400 bg-clip-text text-transparent text-glow">
                   your recipient
                 </span>
-                <br />
-                <span className="text-white">can open.</span>
+                <span className="text-white"> can open.</span>
               </h1>
 
               <p className="mb-8 text-base sm:text-lg text-text-secondary max-w-lg mx-auto lg:mx-0 leading-relaxed">
-                Nexro encrypts your files in the browser before upload. Nobody
-                — not even us — can read your files without the access code.
+                Nexro encrypts your files in the browser before upload. Nobody —
+                not even us — can read your files without the access code.
               </p>
 
               {/* CTAs */}
-              <div className="flex flex-col xs:flex-row gap-3 justify-center lg:justify-start items-stretch xs:items-center">
-                <Link href="/upload" className="w-full xs:w-auto">
+              <div className="flex flex-col gap-3 lg:flex-row lg:justify-start lg:items-center">
+                <Link href="/upload" className="w-full lg:w-auto">
                   <Button
                     size="xl"
-                    className="relative w-full xs:w-auto gap-2 px-8 overflow-hidden group"
+                    className="relative w-full lg:w-auto gap-2 px-8 overflow-hidden group"
                   >
                     <span className="pointer-events-none absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
                     <Upload className="h-4 w-4 shrink-0" />
-                    Share a File — Free
+                    Encrypt &amp; Share — Free
                   </Button>
                 </Link>
-                <Link href="#how-it-works" className="w-full xs:w-auto">
-                  <Button
-                    size="xl"
-                    variant="secondary"
-                    className="w-full xs:w-auto gap-2 px-7"
-                  >
-                    How it works
-                    <ArrowRight className="h-4 w-4 shrink-0" />
-                  </Button>
+                <Link
+                  href="#how-it-works"
+                  className="flex items-center justify-center gap-1.5 text-sm font-medium text-text-secondary hover:text-white transition-colors duration-200 py-2 lg:py-0"
+                >
+                  How it works
+                  <ArrowRight className="h-4 w-4 shrink-0" />
                 </Link>
               </div>
 
-              {/* Trust points */}
-              <div className="mt-7 flex flex-wrap justify-center lg:justify-start gap-x-5 gap-y-2.5">
+              {/* Trust points — desktop */}
+              <div className="mt-7 hidden lg:flex flex-wrap lg:justify-start gap-x-5 gap-y-2.5">
                 {trustBadges.map((t) => (
                   <span
                     key={t}
@@ -207,10 +204,62 @@ export default function HomePage() {
                   </span>
                 ))}
               </div>
+
+              {/* Mobile security mini-card */}
+              <div className="mt-6 lg:hidden rounded-2xl border border-border bg-surface-2/80 backdrop-blur-sm p-4 grid grid-cols-2 gap-3">
+                {[
+                  {
+                    icon: Lock,
+                    label: "AES-256-GCM",
+                    sub: "Client-side",
+                    color: "text-accent",
+                    bg: "bg-accent/10",
+                  },
+                  {
+                    icon: Eye,
+                    label: "Zero Knowledge",
+                    sub: "Server sees nothing",
+                    color: "text-success",
+                    bg: "bg-success/10",
+                  },
+                  {
+                    icon: Zap,
+                    label: "10 GB+ files",
+                    sub: "Chunked streaming",
+                    color: "text-warning",
+                    bg: "bg-warning/10",
+                  },
+                  {
+                    icon: ShieldCheck,
+                    label: "Rate-limited",
+                    sub: "5-attempt lockout",
+                    color: "text-purple-400",
+                    bg: "bg-purple-500/10",
+                  },
+                ].map(({ icon: Icon, label, sub, color, bg }) => (
+                  <div key={label} className="flex items-center gap-2.5">
+                    <div
+                      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${bg}`}
+                    >
+                      <Icon className={`h-4 w-4 ${color}`} />
+                    </div>
+                    <div className="min-w-0">
+                      <p
+                        className={`text-[11px] font-bold leading-tight ${color}`}
+                      >
+                        {label}
+                      </p>
+                      <p className="text-[10px] text-muted leading-tight truncate">
+                        {sub}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            {/* ── Right: floating mockup card ───────────────────────────── */}
-            <div className="relative flex justify-center lg:justify-end">
+            {/* ── Right: floating mockup card — hidden on mobile ────────── */}
+            <div className="hidden lg:flex relative justify-end">
               {/* Outer glow blob */}
               <div className="pointer-events-none absolute inset-8 rounded-3xl bg-accent/20 blur-3xl animate-glow-pulse" />
 
@@ -366,16 +415,20 @@ export default function HomePage() {
       {/* ── Stats bar ─────────────────────────────────────────────────────── */}
       <section className="border-y border-border bg-surface/40 backdrop-blur-sm">
         <div className="mx-auto max-w-5xl px-4 sm:px-6">
-          <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-border">
+          <div className="grid grid-cols-2 sm:grid-cols-4">
             {[
               { value: "AES-256-GCM", label: "Encryption standard" },
               { value: "200k", label: "PBKDF2 iterations" },
               { value: "bcrypt·12", label: "Code hashing" },
               { value: "0 bytes", label: "Plaintext on server" },
-            ].map(({ value, label }) => (
+            ].map(({ value, label }, i) => (
               <div
                 key={label}
-                className="group flex flex-col items-center gap-1.5 px-4 py-5 sm:py-7 text-center"
+                className={`group flex flex-col items-center gap-1.5 px-4 py-5 sm:py-7 text-center ${
+                  i % 2 !== 0 ? "border-l border-border" : ""
+                } ${i >= 2 ? "border-t sm:border-t-0 border-border" : ""} ${
+                  i > 0 ? "sm:border-l sm:border-border" : ""
+                }`}
               >
                 <span className="font-mono text-base sm:text-lg font-bold text-accent tabular-nums">
                   {value}
@@ -390,7 +443,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Features ──────────────────────────────────────────────────────── */}
-      <section className="py-20 sm:py-28">
+      <section className="py-14 sm:py-20 lg:py-28">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="mb-14 text-center max-w-2xl mx-auto">
             <p className="mb-3 text-xs sm:text-sm font-bold uppercase tracking-widest text-accent">
@@ -437,7 +490,9 @@ export default function HomePage() {
                       <Icon className={`h-6 w-6 ${iconColor}`} />
                     </div>
                     <div className="text-right">
-                      <p className={`font-mono text-lg font-extrabold ${iconColor}`}>
+                      <p
+                        className={`font-mono text-lg font-extrabold ${iconColor}`}
+                      >
                         {stat}
                       </p>
                       <p className="text-[11px] text-muted">{statSub}</p>
@@ -464,7 +519,7 @@ export default function HomePage() {
       {/* ── How it works ──────────────────────────────────────────────────── */}
       <section
         id="how-it-works"
-        className="relative overflow-hidden border-t border-border py-20 sm:py-28"
+        className="relative overflow-hidden border-t border-border py-14 sm:py-20 lg:py-28"
       >
         <div className="pointer-events-none absolute inset-0 bg-grid opacity-40" />
         <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-accent/4 blur-[120px]" />
@@ -498,7 +553,9 @@ export default function HomePage() {
                       className={`absolute -top-1 -right-1 h-3 w-3 rounded-full border-2 border-background ${dot} z-20`}
                     />
                   </div>
-                  <h3 className={`font-bold text-white text-sm sm:text-base lg:mt-4`}>
+                  <h3
+                    className={`font-bold text-white text-sm sm:text-base lg:mt-4`}
+                  >
                     {title}
                   </h3>
                 </div>
@@ -506,7 +563,9 @@ export default function HomePage() {
                   {desc}
                 </p>
                 <div className="pl-[60px] lg:pl-0">
-                  <span className={`font-mono text-4xl font-black ${color} opacity-[0.07] select-none`}>
+                  <span
+                    className={`font-mono text-4xl font-black ${color} opacity-[0.07] select-none`}
+                  >
                     {n}
                   </span>
                 </div>
@@ -537,7 +596,7 @@ export default function HomePage() {
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-accent/8 via-purple-900/5 to-transparent" />
           <div className="pointer-events-none absolute -top-28 left-1/2 h-[400px] w-[400px] -translate-x-1/2 rounded-full bg-accent/10 blur-[90px] animate-glow-pulse" />
 
-          <div className="relative mx-auto max-w-3xl px-4 sm:px-6 py-16 sm:py-24 text-center">
+          <div className="relative mx-auto max-w-3xl px-4 sm:px-6 py-12 sm:py-16 lg:py-24 text-center">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/8 px-4 py-1.5 text-xs font-semibold text-accent">
               <Shield className="h-3.5 w-3.5 shrink-0" />
               Military-grade encryption, zero server trust
