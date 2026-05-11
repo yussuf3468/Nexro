@@ -48,6 +48,10 @@ module.exports = {
         float: "float 6s ease-in-out infinite",
         "glow-pulse": "glowPulse 3s ease-in-out infinite",
         "scale-in": "scaleIn 0.2s ease-out",
+        beam: "beam 5s ease-in-out infinite",
+        "float-delayed": "float 6s ease-in-out 1.5s infinite",
+        "float-slow": "float 9s ease-in-out infinite",
+        "ping-slow": "ping 2.5s cubic-bezier(0, 0, 0.2, 1) infinite",
       },
       keyframes: {
         fadeIn: { from: { opacity: 0 }, to: { opacity: 1 } },
@@ -74,6 +78,12 @@ module.exports = {
         shimmerSlide: {
           "0%": { transform: "translateX(-100%)" },
           "100%": { transform: "translateX(300%)" },
+        },
+        beam: {
+          "0%": { transform: "translateY(-100%)", opacity: "0" },
+          "10%": { opacity: "1" },
+          "90%": { opacity: "1" },
+          "100%": { transform: "translateY(3000%)", opacity: "0" },
         },
       },
       backgroundImage: {
